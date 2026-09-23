@@ -1,0 +1,37 @@
+services:
+  asisya-db:
+    image: postgres:16-alpine
+    container_name: asisya_postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: asisya_db
+      POSTGRES_USER: asisya_user
+      POSTGRES_PASSWORD: asisya_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init/01_init_schema.sql:/docker-entrypoint-initdb.d/01_init_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asisya_user -d asisya_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  asisya-redis:
+    image: redis:7-alpine
+    container_name: asisya_redis_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:

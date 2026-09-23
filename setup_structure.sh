@@ -3,31 +3,40 @@
 # Exit on error
 set -e
 
-echo "🚀 Creando estructura de carpetas para el proyecto ASISYA..."
+echo "🚀 Reorganizando y creando la estructura de carpetas en la raíz..."
+
+# Eliminar carpeta src previa si existía
+if [ -d "src" ]; then
+  rm -rf src
+fi
 
 # Archivos base en la raíz y workflows
 mkdir -p .github/workflows
 
 # Backend (.NET 8 Clean Architecture)
-mkdir -p src/Backend/Domain/Entities
-mkdir -p src/Backend/Domain/Repositories
-mkdir -p src/Backend/Application/DTOs
-mkdir -p src/Backend/Application/UseCases
-mkdir -p src/Backend/Application/Mappings
-mkdir -p src/Backend/Infrastructure/Persistence/Configurations
-mkdir -p src/Backend/Infrastructure/Persistence/Repositories
-mkdir -p src/Backend/Infrastructure/Identity
-mkdir -p src/Backend/Api/Controllers
-mkdir -p src/Backend/Api/Middlewares
+mkdir -p backend/Domain/Entities
+mkdir -p backend/Domain/Repositories
+mkdir -p backend/Application/DTOs
+mkdir -p backend/Application/UseCases
+mkdir -p backend/Application/Mappings
+mkdir -p backend/Infrastructure/Persistence/Configurations
+mkdir -p backend/Infrastructure/Persistence/Repositories
+mkdir -p backend/Infrastructure/Identity
+mkdir -p backend/Api/Controllers
+mkdir -p backend/Api/Middlewares
 
 # Frontend (React + TypeScript)
-mkdir -p src/Frontend/src/components
-mkdir -p src/Frontend/src/features/auth/context
-mkdir -p src/Frontend/src/features/auth/pages
-mkdir -p src/Frontend/src/features/products/components
-mkdir -p src/Frontend/src/features/products/pages
-mkdir -p src/Frontend/src/services
-mkdir -p src/Frontend/src/routes
+mkdir -p frontend/src/components
+mkdir -p frontend/src/features/auth/context
+mkdir -p frontend/src/features/auth/pages
+mkdir -p frontend/src/features/products/components
+mkdir -p frontend/src/features/products/pages
+mkdir -p frontend/src/services
+mkdir -p frontend/src/routes
+
+# Base de datos (Scripts SQL e inicialización)
+mkdir -p database/init
+mkdir -p database/scripts
 
 # Pruebas (Tests)
 mkdir -p tests/Backend.UnitTests
@@ -35,24 +44,29 @@ mkdir -p tests/Backend.IntegrationTests
 
 # Crear archivos .gitkeep para preservar carpetas vacías en git
 touch .github/workflows/.gitkeep
-touch src/Backend/Domain/Entities/.gitkeep
-touch src/Backend/Domain/Repositories/.gitkeep
-touch src/Backend/Application/DTOs/.gitkeep
-touch src/Backend/Application/UseCases/.gitkeep
-touch src/Backend/Application/Mappings/.gitkeep
-touch src/Backend/Infrastructure/Persistence/Configurations/.gitkeep
-touch src/Backend/Infrastructure/Persistence/Repositories/.gitkeep
-touch src/Backend/Infrastructure/Identity/.gitkeep
-touch src/Backend/Api/Controllers/.gitkeep
-touch src/Backend/Api/Middlewares/.gitkeep
-touch src/Frontend/src/components/.gitkeep
-touch src/Frontend/src/features/auth/context/.gitkeep
-touch src/Frontend/src/features/auth/pages/.gitkeep
-touch src/Frontend/src/features/products/components/.gitkeep
-touch src/Frontend/src/features/products/pages/.gitkeep
-touch src/Frontend/src/services/.gitkeep
-touch src/Frontend/src/routes/.gitkeep
+touch backend/Domain/Entities/.gitkeep
+touch backend/Domain/Repositories/.gitkeep
+touch backend/Application/DTOs/.gitkeep
+touch backend/Application/UseCases/.gitkeep
+touch backend/Application/Mappings/.gitkeep
+touch backend/Infrastructure/Persistence/Configurations/.gitkeep
+touch backend/Infrastructure/Persistence/Repositories/.gitkeep
+touch backend/Infrastructure/Identity/.gitkeep
+touch backend/Api/Controllers/.gitkeep
+touch backend/Api/Middlewares/.gitkeep
+
+touch frontend/src/components/.gitkeep
+touch frontend/src/features/auth/context/.gitkeep
+touch frontend/src/features/auth/pages/.gitkeep
+touch frontend/src/features/products/components/.gitkeep
+touch frontend/src/features/products/pages/.gitkeep
+touch frontend/src/services/.gitkeep
+touch frontend/src/routes/.gitkeep
+
+touch database/init/.gitkeep
+touch database/scripts/.gitkeep
+
 touch tests/Backend.UnitTests/.gitkeep
 touch tests/Backend.IntegrationTests/.gitkeep
 
-echo "✅ Estructura de directorios creada exitosamente."
+echo "✅ Estructura reorganizada exitosamente con backend/, frontend/ y database/ en la raíz."
