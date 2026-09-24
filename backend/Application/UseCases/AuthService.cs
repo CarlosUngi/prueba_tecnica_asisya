@@ -1,7 +1,6 @@
 using Asisya.Application.DTOs;
 using Asisya.Application.Interfaces;
 using Asisya.Domain.Repositories;
-using BCrypt.Net;
 
 namespace Asisya.Application.UseCases;
 
@@ -11,7 +10,7 @@ public class AuthService : IAuthService
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
     public AuthService(
-        IUserRepository userRepository,
+        IUserRepository userRepository, 
         IJwtTokenGenerator jwtTokenGenerator)
     {
         _userRepository = userRepository;
@@ -26,7 +25,28 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Usuario o contraseña incorrectos.");
         }
 
-        bool isValidPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+        bool isValidPassword = false;
+
+        // 1. Verificación por texto plano (si en la BD está como 'Admin123!')
+        if (user.PasswordHash == loginDto.Password)
+        {
+            isValidPassword = true;
+        }
+        // 2. Verificación por BCrypt Hash (si empieza por $2a$, $2b$ o $2y$)
+        else if (user.PasswordHash.StartsWith("$2a$") || 
+                 user.PasswordHash.StartsWith("$2b$") || 
+                 user.PasswordHash.StartsWith("$2y$"))
+        {
+            try
+            {
+                isValidPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+            }
+            catch
+            {
+                // Si la sal o el hash en la BD está corrupto o mal formado, no es una contraseña válida
+                isValidPassword = false;
+            }
+        }
 
         if (!isValidPassword)
         {

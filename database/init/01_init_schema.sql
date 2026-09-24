@@ -109,7 +109,8 @@ ON CONFLICT (supplier_id) DO NOTHING;
 INSERT INTO users (username, email, password_hash, role)
 VALUES 
     ('admin', 'admin@asisya.com', 'Admin123!', 'Admin')
-ON CONFLICT (username) DO NOTHING;
+ON CONFLICT (username) DO UPDATE 
+SET password_hash = 'Admin123!';
 
 -- 4. Productos de prueba iniciales
 INSERT INTO products (product_name, supplier_id, category_id, quantity_per_unit, unit_price, units_in_stock, units_on_order, reorder_level, discontinued)

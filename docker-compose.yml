@@ -32,6 +32,38 @@ services:
       timeout: 5s
       retries: 5
 
+  asisya-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: asisya_backend_api
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=asisya-db;Port=5432;Database=asisya_db;Username=asisya_user;Password=asisya_password
+      - ConnectionStrings__Redis=asisya-redis:6379
+      - JwtSettings__Secret=AsisyaPruebaTecnicaSuperSecretKey2026Net8JwtValidation!
+      - JwtSettings__Issuer=AsisyaApi
+      - JwtSettings__Audience=AsisyaClients
+      - JwtSettings__ExpiryMinutes=120
+    depends_on:
+      asisya-db:
+        condition: service_healthy
+      asisya-redis:
+        condition: service_healthy
+
+  asisya-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: asisya_frontend_spa
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - asisya-backend
+
 volumes:
   postgres_data:
   redis_data:

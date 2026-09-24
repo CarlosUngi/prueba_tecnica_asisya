@@ -7,11 +7,16 @@ public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionMiddleware> _logger;
+    private readonly IHostEnvironment _env;
 
-    public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
+    public GlobalExceptionMiddleware(
+        RequestDelegate next, 
+        ILogger<GlobalExceptionMiddleware> logger,
+        IHostEnvironment env)
     {
         _next = next;
         _logger = logger;
+        _env = env;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -22,12 +27,12 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ocurrió un error no controlado: {Message}", ex.Message);
-            await HandleExceptionAsync(context, ex);
+            _logger.LogError(ex, "Ocurrió un error no controlado en la API: {Message}", ex.Message);
+            await HandleExceptionAsync(context, ex, _env);
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception, IHostEnvironment env)
     {
         context.Response.ContentType = "application/json";
 
@@ -58,6 +63,7 @@ public class GlobalExceptionMiddleware
             status = context.Response.StatusCode,
             error = statusCode.ToString(),
             message,
+            detail = exception.Message,
             timestamp = DateTime.UtcNow
         };
 
