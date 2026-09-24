@@ -1,194 +1,150 @@
-# 🚀 Prueba Técnica ASISYA - DEV II
-
-Solución integral Backend (API REST en .NET 8), Frontend (SPA en React + TypeScript) y Persistencia (PostgreSQL + Redis) diseñada bajo principios de **Clean Architecture**, alta escalabilidad y rendimiento optimizado para el procesamiento masivo de datos.
-
----
-
-## 🔐 Credenciales de Acceso por Defecto (JWT Auth)
-
-Para realizar pruebas en **Swagger UI** (`/swagger`) o desde la pantalla de **Login del Frontend (React)**:
-
-| Usuario | Correo Electrónico | Contraseña por Defecto | Rol |
-| :--- | :--- | :--- | :--- |
-| **`admin`** | `admin@asisya.com` | **`Admin123!`** | `Admin` |
+#  Prueba Técnica ASISYA - DEV II
+**Solución Fullstack para Gestión de Productos y Categorías con Carga Masiva y Alta Escalabilidad**
 
 ---
 
-## 🏛️ Arquitectura del Sistema
+##  1. Pasos para Encender el Ambiente con Docker
 
-### Backend (.NET 8 Clean Architecture)
-```text
-                     ┌─────────────────────────────────────────┐
-                     │          Presentation (Api)             │
-                     │  (Controllers, Middlewares, Swagger)   │
-                     └────────────────────┬────────────────────┘
-                                          │
-                                          ▼
-                     ┌─────────────────────────────────────────┐
-                     │              Application                │
-                     │    (DTOs, UseCases, Services, Maps)    │
-                     └────────────────────┬────────────────────┘
-                                          │
-                                          ▼
-                     ┌─────────────────────────────────────────┐
-                     │                Domain                   │
-                     │    (Entities, Repository Interfaces)    │
-                     └────────────────────▲────────────────────┘
-                                          │
-                                          │
-                     ┌────────────────────┴────────────────────┐
-                     │             Infrastructure              │
-                     │  (EF Core, PostgreSQL, JWT, Redis)      │
-                     └─────────────────────────────────────────┘
-```
+Para levantar toda la infraestructura del proyecto (**Base de Datos PostgreSQL, Caché Redis, Backend API .NET 8 y Frontend SPA React**) con un solo comando:
 
-### Frontend (React + Vite + TypeScript SPA)
-```text
-frontend/src/
-├── components/                # Componentes reutilizables UI (Navbar, Botones)
-├── features/
-│   ├── auth/                  # Módulo de Autenticación (Context, Login Page)
-│   └── products/              # Módulo de Productos (Catálogo, Paginación, Modales)
-├── routes/                    # Enrutamiento modular y AuthGuard
-└── services/                  # Cliente Axios con interceptor de JWT Bearer Token
-```
-
----
-
-## ⚡ Características Clave
-
-1. **Carga Masiva de 100,000 Productos (PostgreSQL Binary COPY):** El endpoint `POST /api/products/bulk` inserta 100,000 registros en **< 2 segundos**. El Frontend cuenta con un botón interactivo para disparar esta carga en tiempo real.
-2. **Frontend React SPA:**
-   - Formularios interactivos con validación.
-   - Paginación dinámica y búsqueda por texto y categoría (`SERVIDORES` / `CLOUD`).
-   - Muestra las imágenes asociadas a cada categoría en la vista de detalle.
-   - Interceptor Axios que adjunta el Bearer Token automáticamente a las peticiones y redirige al Login ante `401 Unauthorized`.
-   - Protección de rutas privadas con `AuthGuard`.
-3. **Integración CI/CD:** GitHub Actions en `.github/workflows/ci.yml` ejecutando `dotnet test`, `vite build` y `docker build`.
-
----
-
-## 📂 Estructura de Carpetas del Repositorio
-
-```text
-prueba_tecnica_asisya/
-├── .github/
-│   └── workflows/
-│       └── ci.yml                     # Pipeline de CI/CD (Build, Test, Lint, Docker)
-├── backend/                           # API REST en .NET 8 (Clean Architecture)
-│   ├── Api/                           # Controladores REST, Middlewares, Program.cs, Swagger
-│   ├── Application/                   # Casos de Uso, DTOs y Mapeos
-│   ├── Domain/                        # Entidades del sistema e Interfaces de Repositorios
-│   ├── Infrastructure/                # Persistencia (EF Core, Npgsql), JWT Auth y Redis
-│   ├── tests/                         # Cobertura de pruebas unitarias e integración
-│   ├── Dockerfile                     # Contenedor multietapa para la API de .NET 8
-│   └── Asisya.sln                     # Solución completa del Backend (.NET 8)
-├── frontend/                          # SPA en React + Vite + TypeScript
-│   ├── src/                           # Código fuente (Auth, Products, Interceptors, Routes)
-│   ├── nginx.conf                     # Proxy Nginx para SPA y forwarding /api
-│   ├── Dockerfile                     # Contenedor multietapa para React + Nginx
-│   └── vite.config.ts                 # Configuración de Vite con Proxy hacia la API
-├── database/                          # Scripts SQL e inicialización de BD
-│   └── init/
-│       └── 01_init_schema.sql         # DDL de tablas, índices y datos iniciales (Seed)
-├── docker-compose.yml                 # Orquestador total (API + SPA + PostgreSQL + Redis)
-├── .gitignore                         # Reglas de exclusión para Git
-└── README.md                          # Documentación formal del proyecto
-```
-
----
-
-## 🐳 Guía Paso a Paso para Despliegue con Docker
-
-### Opción A: Despliegue Completo con Docker Compose (Recomendado)
-
-Con un solo comando puedes compilar e iniciar **todos** los 4 servicios (**Base de Datos, Redis, Backend API y Frontend SPA**):
-
+###  En Linux (Fedora / Ubuntu / Debian)
 ```bash
-# 1. Levantar toda la infraestructura y servicios en segundo plano
+# 1. Asegurarte de estar en la raíz del proyecto
+cd prueba_tecnica_asisya
+
+# 2. Levantar y compilar todos los servicios en segundo plano
 docker compose up -d --build
 
-# 2. Verificar que los 4 contenedores estén en estado 'healthy' o 'running'
+# 3. Verificar que los 4 contenedores estén corriendo correctamente
 docker compose ps
 ```
 
-#### URLs de Acceso tras ejecutar Docker Compose:
-- 🌐 **Frontend (React SPA):** `http://localhost:8080`
-- ⚡ **Backend API (Swagger):** `http://localhost:5000/swagger`
-- 🗄️ **PostgreSQL:** `localhost:5432` (DB: `asisya_db`, User: `asisya_user`, Pass: `asisya_password`)
-- 🔴 **Redis Cache:** `localhost:6379`
+###  En Windows (PowerShell / Símbolo del Sistema)
+```powershell
+# 1. Abrir PowerShell en la raíz del proyecto
+cd prueba_tecnica_asisya
+
+# 2. Compilar e iniciar los servicios
+docker compose up -d --build
+
+# 3. Validar el estado de los contenedores
+docker compose ps
+```
+
+> **Para detener el ambiente en cualquier momento:** `docker compose down`
 
 ---
 
-### Opción B: Construir y Ejecutar Contenedores Uno a Uno
+##  2. Rutas de Acceso y Credenciales
 
-Si deseas probar o construir los contenedores individualmente:
+### URLs del Sistema
+-  **Frontend SPA (React):** [http://localhost:8080](http://localhost:8080)
+-  **Backend REST API (Swagger UI):** [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
-#### 1. Construir y ejecutar la Base de Datos (PostgreSQL):
-```bash
-# Levantar PostgreSQL solo
-docker compose up -d asisya-db asisya-redis
-```
+### Credenciales de Usuario por Defecto (JWT Auth)
+| Usuario | Correo Electrónico | Contraseña | Rol |
+| :--- | :--- | :--- | :--- |
+| **`admin`** | `admin@asisya.com` | **`Admin123!`** | `Admin` |
 
-#### 2. Construir e Iniciar el Contenedor del Backend (.NET 8):
-```bash
-# Construir la imagen Docker del Backend
-docker build -t asisya-backend:latest ./backend
+###  Credenciales de la Base de Datos (PostgreSQL)
+- **Host:** `localhost` (o `asisya-db` dentro de Docker)
+- **Puerto:** `5432`
+- **Base de Datos:** `asisya_db`
+- **Usuario:** `asisya_user`
+- **Contraseña:** `asisya_password`
+- **Caché Redis:** `localhost:6379`
 
-# Ejecutar el contenedor del Backend enlazado a la red de la BD
-docker run -d \
-  --name asisya_backend_api \
-  -p 5000:5000 \
-  --network prueba_tecnica_asisya_default \
-  -e ConnectionStrings__DefaultConnection="Host=asisya-db;Port=5432;Database=asisya_db;Username=asisya_user;Password=asisya_password" \
-  asisya-backend:latest
-```
+---
 
-#### 3. Construir e Iniciar el Contenedor del Frontend (React + Nginx):
-```bash
-# Construir la imagen Docker del Frontend
-docker build -t asisya-frontend:latest ./frontend
+##  3. Arquitectura de la Solución y Decisiones Técnicas
 
-# Ejecutar el contenedor del Frontend
-docker run -d \
-  --name asisya_frontend_spa \
-  -p 8080:80 \
-  --network prueba_tecnica_asisya_default \
-  asisya-frontend:latest
+### Decisión de Repositorio: Monorepo
+Decidí organizar la solución como un **Monorepo** (`backend/`, `frontend/`, `database/`, `.github/`). Esta decisión facilita centralizar la prueba técnica, simplifica la revisión del código y permite orquestar con un único `docker-compose.yml` toda la infraestructura del sistema sin requerir múltiples repositorios separados.
+
+###  Arquitectura Hexagonal (Ports & Adapters)
+Para la construcción del Backend en .NET 8 elegí la **Arquitectura Hexagonal (Puertos y Adaptadores)**. 
+
+La razón principal de esta elección es **aislar por completo el dominio y la lógica de negocio pura de las librerías, marcos de trabajo (frameworks) y motores de base de datos**. 
+- **Flexibilidad Futura:** Si el día de mañana la compañía decide migrar la base de datos relacional (PostgreSQL) a un motor no relacional (MongoDB, DynamoDB) o incluso enviar analíticas masivas a **Google BigQuery**, el núcleo del dominio y los casos de uso permanecerán intactos. Solo se requerirá crear un nuevo adaptando de infraestructura.
+
+### Carga Masiva (Bulk Insert) basada en Flujo de Bytes Binario
+Para cumplir con el requerimiento de procesar **100,000 productos** de forma ultra eficiente vía `POST /api/products/bulk`, descarté la iteración tradicional del ORM (`foreach -> Add -> SaveChanges`), ya que colapsaría la memoria.
+
+En su lugar, implementé la **estrategia de streaming binario nativo de PostgreSQL (`NpgsqlBinaryImporter / COPY FROM STDIN BINARY`)**:
+- La API abre una transmisión de bytes directa hacia el motor de almacenamiento de PostgreSQL.
+- Los 100,000 registros son serializados en un flujo binario y transferidos en un solo bloque de red sin pasar por el rastreador de cambios (*Change Tracker*) del ORM.
+- **Resultado:** Inserción completa de los 100,000 productos en **menos de 2 segundos**.
+
+### Manejo de Concurrencia con Redis
+Incorporé **Redis** dentro de la arquitectura como una capa de caché distribuida en memoria. Esto permite almacenar en memoria los catálogos de productos y categorías de acceso frecuente, mitigando la carga directa en la base de datos cuando existen múltiples peticiones concurrentes simultáneas.
+
+###  Autenticación y Flujo JWT
+1. El usuario inicia sesión en la vista de Login con sus credenciales.
+2. El Backend valida las credenciales y genera un **Token JWT firmado (HMAC SHA-256)** con expiración.
+3. El Frontend recibe el token y lo almacena de forma segura en `localStorage`.
+4. Mediante un **Interceptor de Axios** (Middleware en el cliente), el token se adjunta automáticamente en el encabezado `Authorization: Bearer <token>` de todas las peticiones HTTP subsiguientes.
+5. Si el token vence o es inválido, el interceptor captura la respuesta `401 Unauthorized` y redirige automáticamente al usuario a la pantalla de Login.
+
+---
+
+##  4. Estructura de Carpetas del Proyecto
+
+```text
+prueba_tecnica_asisya/
+├── backend/                           # Capa Backend (.NET 8 - Arquitectura Hexagonal)
+│   ├── Api/                           # Adaptador REST (Controllers, Middlewares, Program.cs, Swagger)
+│   ├── Application/                   # Casos de Uso, DTOs y Mapeos de negocio
+│   ├── Domain/                        # Núcleo puro (Entidades, Interfaces de Repositorios)
+│   ├── Infrastructure/                # Adaptadores de Persistencia (EF Core, Npgsql Binary, JWT, Redis)
+│   ├── tests/                         # Suite de Pruebas Automatizadas
+│   │   ├── Backend.UnitTests/         # Pruebas Unitarias (xUnit, NSubstitute, FluentAssertions)
+│   │   └── Backend.IntegrationTests/  # Pruebas de Integración (WebApplicationFactory + InMemory DB)
+│   ├── Dockerfile                     # Imagen Docker multietapa para la API
+│   └── Asisya.sln                     # Solución completa de C#
+├── frontend/                          # Capa Frontend (SPA React + Vite + TypeScript)
+│   ├── src/
+│   │   ├── components/                # Componentes UI (Navbar, Modales)
+│   │   ├── features/                  # Módulos de Auth (Context, Login) y Products (Catálogo, Bulk)
+│   │   ├── routes/                    # Enrutamiento modular y AuthGuard
+│   │   └── services/                  # Cliente Axios e Interceptor de JWT
+│   ├── nginx.conf                     # Configuración de Nginx Reverse Proxy para la SPA
+│   └── Dockerfile                     # Imagen Docker multietapa (React + Nginx)
+├── database/                          # Persistencia de Base de Datos
+│   └── init/
+│       └── 01_init_schema.sql         # DDL SQL con tablas, llaves foráneas, índices y Seed Data
+├── .github/
+│   └── workflows/
+│       └── ci.yml                     # Pipeline de CI/CD (Build, Test, Lint, Docker)
+├── docker-compose.yml                 # Orquestador de la solución completa
+├── .gitignore                         # Exclusiones de Git
+└── README.md                          # Documentación del proyecto
 ```
 
 ---
 
-## 🛠️ Ejecución Local Sin Docker (Modo Desarrollo)
+##  5. Orquestación con Docker Compose
 
-### 1. Iniciar Base de Datos y Redis:
-```bash
-docker compose up -d asisya-db asisya-redis
-```
+El archivo `docker-compose.yml` en la raíz ensambla los 4 contenedores requeridos para que la solución funcione de manera autónoma:
 
-### 2. Ejecutar Pruebas y Backend:
-```bash
-cd backend
-
-# Correr pruebas automatizadas
-dotnet test
-
-# Iniciar la API
-cd Api
-dotnet run
-```
-
-### 3. Ejecutar Frontend (React + Vite):
-```bash
-cd frontend
-npm install
-npm run dev
-```
+1. **`asisya-db`**: Motor PostgreSQL 16 que ejecuta automáticamente el script `01_init_schema.sql` al iniciar.
+2. **`asisya-redis`**: Servidor Redis 7 para la gestión de caché y alto rendimiento.
+3. **`asisya-backend`**: API REST compilada en .NET 8 que se conecta a PostgreSQL y Redis.
+4. **`asisya-frontend`**: Servidor Nginx que aloja la SPA de React y redirige las llamadas `/api/` hacia el Backend mediante Proxy Inverso.
 
 ---
 
-## ☁️ Escalabilidad Horizontal en Entornos Cloud
+##  6. Propuesta de Escalabilidad Horizontal en la Nube
 
-1. **API Stateless & Balanceador de Cargas:** La API no almacena sesión en memoria (autenticación JWT). Se despliegan $N$ réplicas en Kubernetes (EKS/GKE/AKS) detrás de un *Ingress Controller* o AWS ALB.
-2. **Réplicas de Lectura en PostgreSQL (Read Replicas):** Las escrituras e inserciones masivas se dirigen al nodo primario, mientras que las consultas de lectura (`GET /api/products`) se distribuyen entre réplicas de lectura.
-3. **Desacoplamiento con Colas de Mensajes:** Para cargas extremas, la API acepta las solicitudes masivas retornando `202 Accepted` y delega la inserción a consumidores en segundo plano vía **RabbitMQ** o **AWS SQS**.
+Para llevar este sistema a producción y responder a un crecimiento exponencial de usuarios y volumen de datos, propongo la siguiente estrategia evolutiva por fases:
+
+### 1. Fase Inicial: Arquitectura Serverless (Cloud Run / AWS Lambda)
+Inicialmente propondría desplegar la API y el Frontend utilizando servicios **Serverless** basados en contenedores, como **Google Cloud Run** o **AWS Lambda / Container Apps**. Esta arquitectura permite escalar automáticamente de 0 a cientos de instancias bajo demanda con un esquema de costos muy eficiente (pago por uso real).
+
+### 2. Fase de Crecimiento Moderado: Servidores Dedicados + Balanceador de Carga
+A medida que el tráfico sea constante y predecible, migraría a una infraestructura de **servidores dedicados (Compute Engines / EC2)** respaldada por un **Balanceador de Carga de aplicación en la nube (AWS ALB / GCP Load Balancer)** configurado con políticas de auto-escalado (*Auto Scaling Groups*).
+
+### 3. Fase de Desacoplamiento: Colas de Mensajes (Message Brokers)
+*Antes de escalar a clústeres complejos*, para soportar picos de carga masiva (ej. millones de productos recibidos en simultáneo), implementaría un desacoplamiento mediante **Colas de Mensajes (RabbitMQ, AWS SQS o Google Pub/Sub)**. La API aceptaría la solicitud retornando de inmediato un `202 Accepted` y enviará los mensajes a la cola para que workers dedicados los procesen en segundo plano sin saturar los servidores HTTP.
+
+### 4. Fase de Gran Escala: Kubernetes (EKS / GKE)
+Si el volumen exige una alta densidad de microservicios y disponibilidad global, implementaría un clúster de **Kubernetes (GKE / EKS)**. El balanceador de carga de la nube distribuirá el tráfico hacia el **Ingress Controller de Kubernetes**, y el clúster gestionará automáticamente el escalado de *Pods* ($HPA$) y nodos según el consumo de CPU y memoria de la API.
