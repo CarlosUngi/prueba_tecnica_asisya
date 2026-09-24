@@ -79,6 +79,9 @@ prueba_tecnica_asisya/
 │   ├── Application/                   # Casos de Uso, DTOs y Mapeos
 │   ├── Domain/                        # Entidades del sistema e Interfaces de Repositorios
 │   ├── Infrastructure/                # Persistencia (EF Core, Npgsql), JWT Auth y Redis
+│   ├── tests/                         # Cobertura de pruebas unitarias e integración
+│   │   ├── Backend.UnitTests/         # Pruebas unitarias (xUnit, NSubstitute, FluentAssertions)
+│   │   └── Backend.IntegrationTests/  # Pruebas de integración
 │   └── Asisya.sln                     # Solución completa del Backend (.NET 8)
 ├── frontend/                          # SPA en React + Vite + TypeScript
 │   ├── src/                           # Código fuente (Auth, Products, Interceptors, Routes)
@@ -87,9 +90,6 @@ prueba_tecnica_asisya/
 ├── database/                          # Scripts SQL e inicialización de BD
 │   └── init/
 │       └── 01_init_schema.sql         # DDL de tablas, índices y datos iniciales (Seed)
-├── tests/                             # Cobertura de pruebas automatizadas
-│   ├── Backend.UnitTests/             # Pruebas unitarias (xUnit, NSubstitute/Moq)
-│   └── Backend.IntegrationTests/      # Pruebas de integración (WebApplicationFactory + Testcontainers)
 ├── docker-compose.yml                 # Orquestador local (PostgreSQL + Redis)
 ├── .gitignore                         # Reglas de exclusión para Git
 └── README.md                          # Documentación formal del proyecto
@@ -104,9 +104,15 @@ prueba_tecnica_asisya/
 docker compose up -d
 ```
 
-### 2. Ejecutar el Backend (.NET 8):
+### 2. Ejecutar el Backend y las Pruebas (.NET 8):
 ```bash
-cd backend/Api
+cd backend
+
+# Ejecutar Pruebas Unitarias
+dotnet test
+
+# Ejecutar la API REST
+cd Api
 dotnet run
 ```
 *La API estará disponible en `http://localhost:5000` y el Swagger UI en `http://localhost:5000/swagger`.*

@@ -95,3 +95,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Permitir que WebApplicationFactory acceda a Program en Pruebas de Integración
+public partial class Program { }

@@ -26,7 +26,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Usuario o contraseña incorrectos.");
         }
 
-        bool isValidPassword = true;// BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+        bool isValidPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
 
         if (!isValidPassword)
         {
