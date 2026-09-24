@@ -68,3 +68,14 @@ jobs:
 
     - name: Verificar construcción de imagen Docker (Frontend)
       run: docker build -t asisya-frontend:latest ./frontend
+
+    - name: Mock - Simular subida a Registry y consultar contenedor
+      run: |
+        echo "================================================================"
+        echo "🔍 Consultando el sistema operativo dentro del contenedor generado..."
+        docker run --rm asisya-backend:latest cat /etc/os-release | grep PRETTY_NAME
+        echo "================================================================"
+        echo "🚀 MOCK: En este paso subiríamos el contenedor a un Google Container Registry (GCR),"
+        echo "a su versión en AWS (Elastic Container Registry - ECR), o a Docker Hub."
+        echo "Comando teórico: docker push mi-registro/asisya-backend:latest"
+        echo "================================================================"
