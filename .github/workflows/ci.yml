@@ -73,7 +73,7 @@ jobs:
       run: |
         echo "================================================================"
         echo "🔍 Consultando el sistema operativo dentro del contenedor generado..."
-        docker run --rm asisya-backend:latest cat /etc/os-release | grep PRETTY_NAME
+        docker run --rm --entrypoint cat asisya-backend:latest /etc/os-release | grep PRETTY_NAME
         echo "================================================================"
         echo "🚀 MOCK: En este paso subiríamos el contenedor a un Google Container Registry (GCR),"
         echo "a su versión en AWS (Elastic Container Registry - ECR), o a Docker Hub."
